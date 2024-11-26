@@ -8,7 +8,7 @@
         /* Styles for layout and design */
         body {
             font-family: Arial, sans-serif;
-            background-color: #00ADE1;
+            background-image: linear-gradient(to right bottom, #06358c, #682d92, #a21588, #d00071, #ee0050, #f92f3e, #fe4d28, #ff6800, #ff9000, #ffb600, #fcdb00, #eeff00);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,22 +24,29 @@
             width: 100%;
         }
         h2{
-            font-size: 20px;
+            font-size: 14px;
             color: #ffffff;
             text-align: center;
         }
-        h4{
-            font-size: 10px;
+        #Time {
+            font-size: 14px;
             color: #ffffff;
             text-align: center;
         }
-        
         label {
             display: block;
             margin: 10px 0 5px;
             color: #ffffff;
         }
         input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="Strings"],
         select {
             width: 100%;
             padding: 8px;
@@ -67,7 +74,11 @@
         }
 
         /* New styles for horizontal alignment */
-        .dimension-container {
+        .dimension-container-text {
+            display: flex;
+            gap: 30px; /* Space between the two input boxes */
+        }
+        .dimension-container-number {
             display: flex;
             gap: 30px; /* Space between the two input boxes */
         }
@@ -80,37 +91,79 @@
 </head>
 <body>
     <div id="calculator">
+        <br>
         <img src="https://raw.githubusercontent.com/DanuponGithub/Ben/main/DNTSWT.jpg" 
          alt="Logo" 
          style="display: block; margin: 0 auto; max-width: 100%; height: auto; border-radius: 8px;">
-        <h4>Version 1.10</h4>
-        <h2>โปรแกรมคำนวนจำนวนกระเบื้อง</h2>
-        <h2>ปูนกาวและยาแนว</h2>
+       
+        <h2>โปรแกรมคำนวนจำนวนกระเบื้อง ปูนกาวและยาแนว Ver 1.11</h2>
+
+        <div id="Time"></div>
+
+        <script>
+            function formatThaiDate(date) {
+                const options = {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    weekday: 'long',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'Asia/Bangkok'
+                };
+    
+                const thaiDate = new Intl.DateTimeFormat('th-TH', options).format(date);
+    
+                // Add Buddhist Era (BE) year
+                return thaiDate.replace(/\d{4}/, (year) => parseInt(year));
+            }
+    
+            const now = new Date();
+            document.getElementById("Time").textContent = formatThaiDate(now);
+        </script>
+        <br>
+        <div class="dimension-container-text">
+            <div class="customer-input">
+                <label for="customer">ชื่อลูกค้า</label>
+                <input type="Strings" id="customer" placeholder="ใส่ชื่อลูกค้า">
+            </div>
+            <div class="workplace-input">
+                <label for="customer">ชื่อพื้นที่งาน</label>
+                <input type="Strings" id="workplace" placeholder="ชื่อพื้นที่งาน">
+            </div>
+        </div>
 
         <!-- Input fields for area dimensions in horizontal alignment -->
-        <div class="dimension-container">
+        <div class="dimension-container-number">
             <div class="dimension-input">
                 <label for="width">กว้าง (เมตร):</label>
-                <input type="number" id="width" min="0" step="0.1" placeholder="ใส่ค่าความกว้าง เมตร">
+                <input type="number" id="width" min="0" step="0.1" placeholder="ระบุความกว้าง เมตร">
             </div>
             <div class="dimension-input">
                 <label for="length">ยาว (เมตร):</label>
-                <input type="number" id="length" min="0" step="0.1" placeholder="ใส่ค่าความยาว เมตร">
+                <input type="number" id="length" min="0" step="0.1" placeholder="ระบุความยาว เมตร">
             </div>
         </div>
 
         <!-- Dropdown for tile size selection -->
         <label for="tileSize">เลือกขนาดกระเบื้อง:</label>
         <select id="tileSize" onchange="updateGroutGapOptions()">
-            <optgroup label="กระเบื้องขนาดกลาง">
-                <option value="0.01">10 x 10 ซม. (0.01 m²)</option>
-                <option value="0.04">20 x 20 ซม. (0.04 m²)</option>
-                <option value="0.09">30 x 30 ซม. (0.09 m²)</option>
-                <option value="0.16">40 x 40 ซม. (0.16 m²)</option>
+            <optgroup label="กระเบื้องบุผนัง">
+                <option value="1">ขนาด 25 x 40 ซม. (1m²)</option>
+                <option value="0.9">ขนาด 30 x 50 ซม. (0.9m²)</option>
             </optgroup>
-            <optgroup label="กระเบื้องขนาดใหญ่">
-                <option value="0.36">60 x 60 ซม. (0.36 m²)</option>
-                <option value="0.72">60 x 120 ซม. (0.72 m²)</option>
+            <optgroup label="กระเบื้องปูพื้น">
+                <option value="0.99">ขนาด 30 x 30 ซม. (0.99m²)</option>
+                <option value="0.96">ขนาด 40 x 40 ซม. (0.96m²)</option>
+                <option value="1.08">ขนาด 30 x 60 ซม. (1.08m²)</option>
+                <option value="1.08000001">ขนาด 60 x 60 ซม. (1.08m²)</option>
+                <option value="1.44">ขนาด 60 x 120 ซม. (1.44m²)</option>
+                <option value="1.08">ขนาด 60 x 60 ซม.(PORCELAIN) (1.08m²)</option>
+                <option value="1.44">ขนาด 60 x 120 ซม.(PORCELAIN) (1.44m²)</option>
+                <option value="1.28">ขนาด 40 x 80 ซม. (1.28m²)</option>
+                <option value="1.28000001">ขนาด 80 x 80 ซม. (1.28m²)</option>
             </optgroup>
         </select>
 
@@ -134,7 +187,6 @@
         <div id="result">
             <p id="area">พื้นที่งาน: -</p>
             <p id="tileCount">จำนวนกระเบื้อง: -</p>
-            <p id="tileBoxCount">จำนวนกล่องกระเบื้อง: -</p>
             <p id="adhesiveNeeded">จำนวนปูนกาว: -</p>
             <p id="groutNeeded">จำนวนยาแนว: -</p>
         </div>
@@ -142,12 +194,15 @@
 
     <script>
         const groutRateMatrix = {
-            "0.01": [0.32, 0.64, 0.96, 1.28, 1.6, 1.92],// 10x10 Example grout rates for 2.5x2.5 tiles
-            "0.04": [0.16, 0.32, 0.48, 0.64, 0.8, 0.96],//20x20 Example grout rates for 5x5 tiles
-            "0.09": [0.14, 0.27, 0.4, 0.54, 0.67, 0.8],//30x30
-            "0.16": [0.10, 0.20, 0.30, 0.40, 0.50, 0.60],//40x40
-            "0.36": [0.08, 0.16, 0.24, 0.32, 0.40, 0.48],//60x60
-            "0.72": [0.06, 0.12, 0.18, 0.24, 0.30,0.36]//60x120
+            "0.9": [0.09, 0.17, 0.26, 0.34, 0.43, 0.51],        // 25 x 40
+            "0.96": [0.08, 0.16, 0.24, 0.32, 0.40, 0.48],       // 30 x 50
+            "0.99": [0.11, 0.21, 0.32, 0.43, 0.53, 0.64],       // 30 x 30
+            "1": [0.10, 0.21, 0.31, 0.42, 0.52, 0.62],          // 25 x 40
+            "1.08": [0.08, 0.16, 0.24, 0.32, 0.40, 0.48],       // 30 x 60
+            "1.08000001": [0.07, 0.13, 0.20, 0.27, 0.33, 0.40], // 60 x 60
+            "1.28": [0.08, 0.15, 0.23, 0.30, 0.38, 0.45],       // 40 x 80
+            "1.28000001": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30], // 80 x 80
+            "1.44": [0.06, 0.12, 0.18, 0.24, 0.30,0.36]         // 60 x 120
         };
         const groutGaps = [1, 2, 3, 4, 5, 6]; // Example gaps in mm
 
@@ -190,22 +245,12 @@
     const adhesiveNeededBag = Math.ceil(adhesiveNeeded / 20); // ถุงปูนกาว (ถุงละ 20 kg)
     const groutNeededBag = Math.ceil(groutNeeded); // ถุงยาแนว
 
-    // คำนวณจำนวนกล่องกระเบื้อง
-    let boxCount = 0;
-    if (tileSize <= 0.16) { 
-        // กระเบื้องขนาดกลาง (พื้นที่ต่อกล่อง = 1 m²)
-        boxCount = Math.ceil(area);
-    } else {
-        // กระเบื้องขนาดใหญ่ (พื้นที่ต่อกล่อง = 1.44 m²)
-        boxCount = Math.ceil(area / 1.44);
-    }
 
     // แสดงผลลัพธ์
     document.getElementById("area").textContent = `พื้นที่งาน: ${area.toFixed(2)} ตารางเมตร`;
-    document.getElementById("tileCount").textContent = `จำนวนกระเบื้อง: ${tileCount} แผ่น`;
-    document.getElementById("adhesiveNeeded").textContent = `จำนวนปูนกาว: ${adhesiveNeeded} กิโลกรัม จำนวน ${adhesiveNeededBag} ถุง`;
-    document.getElementById("groutNeeded").textContent = `จำนวนยาแนว: ${groutNeeded} กิโลกรัม จำนวน ${groutNeededBag} ถุง`;
-    document.getElementById("tileBoxCount").textContent = `จำนวนกล่องกระเบื้อง: ${boxCount} กล่อง`;
+    document.getElementById("tileCount").textContent = `จำนวนกระเบื้อง: ${tileCount} กล่อง`;
+    document.getElementById("adhesiveNeeded").textContent = `จำนวนปูนกาว: ${adhesiveNeededBag} ถุง (${adhesiveNeeded} กิโลกรัม)`;
+    document.getElementById("groutNeeded").textContent = `จำนวนยาแนว: ${groutNeededBag} ถุง (${groutNeeded} กิโลกรัม)`;
 }
 
         // Initialize grout gap options on page load
