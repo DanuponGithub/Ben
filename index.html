@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <title>โปรแกรมคำนวนจำนวนกระเบื้อง ปูนกาวและยาแนว</title>
     <style>
         body {
@@ -21,6 +23,7 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 100%;
+            margin: 0 20px; /* Add spacing on the sides */
         }
         h2, #Time {
             font-size: 14px;
@@ -56,13 +59,21 @@
             color: #ffffff;
         }
         .dimension-container {
-            display: flex;
-            gap: 30px;
+        display: flex;
+        gap: 25px;
+        margin-right: 20px; /* Add spacing between the right text box and the edge */
+        margin-left: 20px; /* Add spacing on the left side too */
         }
         .dimension-input {
             flex: 1;
         }
-    </style>
+
+        /* Key Changes:
+        Added margin-right and margin-left to .dimension-container to create a gap between the edge and the inputs.
+        Added margin: 0 20px; to #calculator to ensure the entire calculator has some horizontal spacing from the edges of the screen.
+        If you want to control spacing dynamically based on screen size, you can use media queries to adjust the values for smaller or larger screens. Let me know if you need help with that! */
+
+</style>
 </head>
 <body>
     <div id="calculator">
@@ -103,108 +114,165 @@
             </div>
         </div>
 
-       <!-- Dropdown for tile size selection -->
-       <label for="tileSize">เลือกขนาดกระเบื้อง:</label>
-       <select id="tileSize" onchange="updateTrowelSize()">
-           <optgroup label="กระเบื้องบุผนัง">
-               <option value="1">ขนาด 25 x 40 ซม. (1m²)</option>
-               <option value="0.9">ขนาด 30 x 50 ซม. (0.9m²)</option>
-           </optgroup>
-           <optgroup label="กระเบื้องปูพื้น">
-               <option value="0.99">ขนาด 30 x 30 ซม. (0.99m²)</option>
-               <option value="0.96">ขนาด 40 x 40 ซม. (0.96m²)</option>
-               <option value="1.08">ขนาด 30 x 60 ซม. (1.08m²)</option>
-               <option value="1.08000001">ขนาด 60 x 60 ซม. (1.08m²)</option>
-               <option value="1.44">ขนาด 60 x 120 ซม. (1.44m²)</option>
-               <option value="1.08000001">ขนาด 60 x 60 ซม.(PORCELAIN) (1.08m²)</option>
-               <option value="1.44">ขนาด 60 x 120 ซม.(PORCELAIN) (1.44m²)</option>
-               <option value="1.28">ขนาด 40 x 80 ซม. (1.28m²)</option>
-               <option value="1.28000001">ขนาด 80 x 80 ซม. (1.28m²)</option>
-           </optgroup>
-       </select>
+      <!-- Dropdown for tile size selection -->
+<div class="dimension-container">
+    <div class="dimension-input">
+    <label for="tileSize">เลือกขนาดกระเบื้อง:</label>
+        <select id="tileSize" onchange="updateTrowelAndGroutGap()">
+            <optgroup label="กระเบื้องบุผนัง">
+                <option value="1">ขนาด 25 x 40 ซม. (1m²)</option>
+                <option value="0.9">ขนาด 30 x 50 ซม. (0.9m²)</option>
+            </optgroup>
+            <optgroup label="กระเบื้องปูพื้น">
+                <option value="0.99">ขนาด 30 x 30 ซม. (0.99m²)</option>
+                <option value="0.96">ขนาด 40 x 40 ซม. (0.96m²)</option>
+                <option value="1.08">ขนาด 30 x 60 ซม. (1.08m²)</option>
+                <option value="1.08000001">ขนาด 60 x 60 ซม. (1.08m²)</option>
+                <option value="1.44">ขนาด 60 x 120 ซม. (1.44m²)</option>
+                <option value="1.08000001">ขนาด 60 x 60 ซม.(PORCELAIN) (1.08m²)</option>
+                <option value="1.44">ขนาด 60 x 120 ซม.(PORCELAIN) (1.44m²)</option>
+                <option value="1.28">ขนาด 40 x 80 ซม. (1.28m²)</option>
+                <option value="1.28000001">ขนาด 80 x 80 ซม. (1.28m²)</option>
+            </optgroup>
+        </select>
+    </div>
+</div>
 
+<div class="dimension-container">
+    <div class="dimension-input">
+        <label for="groutRates">ขนาดร่องกระเบื้อง (มม.):</label>
+        <select id="groutRates" onchange="displayGroutRate()"></select>
+    </div>
+</div>
+
+<div class="dimension-container">
+    <div class="dimension-input">
         <label for="trowelSize">ขนาดเกรียงหวี (ตั้งค่าอัตโนมัติจากขนาดกระเบื้อง):</label>
         <input type="text" id="trowelSize" readonly>
-        <label for="groutgap">ขนาดร่องกระเบื้อง (มม.):</label>
-        <select id="groutgap"></select>
-        <button onclick="calculateTileUsage()">คำนวน</button>
-        <div id="result">
-            <p id="area">พื้นที่งาน: -</p>
-            <p id="tileCount">จำนวนกระเบื้อง: -</p>
-            <p id="adhesiveNeeded">จำนวนปูนกาว: -</p>
-            <p id="groutNeeded">จำนวนยาแนว: -</p>
-        </div>
     </div>
-<script>
-        const groutRateMatrix = {
-            "0.9": [0.09, 0.17, 0.26, 0.34, 0.43, 0.51],        // 25 x 40
-            "0.96": [0.08, 0.16, 0.24, 0.32, 0.40, 0.48],       // 30 x 50
-            "0.99": [0.11, 0.21, 0.32, 0.43, 0.53, 0.64],       // 30 x 30
-            "1": [0.10, 0.21, 0.31, 0.42, 0.52, 0.62],          // 25 x 40
-            "1.08": [0.08, 0.16, 0.24, 0.32, 0.40, 0.48],       // 30 x 60
-            "1.08000001": [0.07, 0.13, 0.20, 0.27, 0.33, 0.40], // 60 x 60
-            "1.28": [0.08, 0.15, 0.23, 0.30, 0.38, 0.45],       // 40 x 80
-            "1.28000001": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30], // 80 x 80
-            "1.44": [0.06, 0.12, 0.18, 0.24, 0.30,0.36]         // 60 x 120
-        };
-        const groutGaps = [1, 2, 3, 4, 5, 6]; // Example gaps in mm
+</div>
 
-        
-        function updateGroutGapOptions() {
-            const tileSize = document.getElementById("tileSize").value;
-            const groutGapSelect = document.getElementById("groutgap");
-            groutGapSelect.innerHTML = "";
-            groutGaps.forEach((gap, index) => {
-                const option = document.createElement("option");
-                option.value = groutRateMatrix[tileSize][index];
-                option.textContent = `${gap} มม.`;
-                groutGapSelect.appendChild(option);
-            });
-        }
+<div class="dimension-container">
+    <div class="dimension-input">
+        <button onclick="calculateTileUsage()">คำนวน</button>
+    </div>
+</div>
 
-        function updateTrowelSize() {
-            // Get the value of the selected tile size
-            const tileSize = parseFloat(document.getElementById("tileSize").value);
-            
-            // Determine trowel size and corresponding description
-            let trowelDescription;
-            if (tileSize <= 1.08) {
-                trowelDescription = "ขนาด 6x6 ใช้ปูกระเบื้องขนาดกลาง อัตราการใช้ปูนกาว 5 kg/m²";
-            } else {
-                trowelDescription = "ขนาด 10x10 ใช้ปูกระเบื้องขนาดใหญ่ อัตราการใช้ปูนกาว 7 kg/m²";
-            }
+<div id="result">
+        <p id="area">พื้นที่งาน:-</p>
+        <p id="tileCount">จำนวนกระเบื้อง:-</p>
+        <p id="adhesiveNeeded">จำนวนปูนกาว:-</p>
+        <p id="groutNeeded">จำนวนยาแนว:-</p>
+</div>
 
-            // Update the trowel size input field with the description
-            document.getElementById("trowelSize").value = trowelDescription;
-        }   
+<div class="dimension-container">
+    <div class="dimension-input">
+    <button id="captureScreen" style="margin-top: 10px;">
+        <!-- <i class="fas fa-camera"></i> Capture Screen -->
+        <i class="fas fa-camera"></i>
+    </button>
+    </div>
+</div>
 
-        function calculateTileUsage() {
-            const width = parseFloat(document.getElementById("width").value);
-            const length = parseFloat(document.getElementById("length").value);
-            const tileSize = parseFloat(document.getElementById("tileSize").value);
-            const adhesiveRate = parseInt(document.getElementById("trowelSize").value.split(' ')[1]);
-            const groutRate = parseFloat(document.getElementById("groutgap").value);
+    <script>
 
-            if (isNaN(width) || isNaN(length) || isNaN(tileSize) || isNaN(adhesiveRate) || isNaN(groutRate)) {
-                alert("กรุณากรอกข้อมูลให้ครบถ้วน");
-                return;
-            }
+    const tileData = {
+    "1": { label: "ขนาด 25 x 40 ซม. (1m²)", groutRates: [0.10, 0.21, 0.31, 0.42, 0.52, 0.62] },
+    "0.9": { label: "ขนาด 30 x 50 ซม. (0.9m²)", groutRates: [0.09, 0.17, 0.26, 0.34, 0.43, 0.51] },
+    "0.99": { label: "ขนาด 30 x 30 ซม. (0.99m²)", groutRates: [0.11, 0.21, 0.32, 0.43, 0.53, 0.64] },
+    "0.96": { label: "ขนาด 40 x 40 ซม. (0.96m²)", groutRates: [0.08, 0.16, 0.24, 0.32, 0.40, 0.48] },
+    "1.08": { label: "ขนาด 30 x 60 ซม. (1.08m²)", groutRates: [0.08, 0.16, 0.24, 0.32, 0.40, 0.48] },
+    "1.08000001": { label: "ขนาด 60 x 60 ซม. (1.08m²)", groutRates: [0.07, 0.13, 0.20, 0.27, 0.33, 0.40] },
+    "1.44": { label: "ขนาด 60 x 120 ซม. (1.44m²)", groutRates: [0.06, 0.12, 0.18, 0.24, 0.30, 0.36] },
+    "1.28": { label: "ขนาด 40 x 80 ซม. (1.28m²)", groutRates: [0.08, 0.15, 0.23, 0.30, 0.38, 0.45] },
+    "1.28000001": { label: "ขนาด 80 x 80 ซม. (1.28m²)", groutRates: [0.05, 0.10, 0.15, 0.20, 0.25, 0.30] }
+    };
 
-            const area = width * length;
-            const tileCount = Math.ceil(area / tileSize);
-            const adhesiveNeeded = (area * adhesiveRate).toFixed(2);
-            const groutNeeded = (area * groutRate).toFixed(2);
+    function updateTrowelAndGroutGap() {
+    const tileSize = parseFloat(document.getElementById("tileSize").value);
+    const trowelSizeInput = document.getElementById("trowelSize");
+    const groutRatesDropdown = document.getElementById("groutRates");
+    const tileSizeLabel = document.querySelector('label[for="tileSize"]'); // Select the label element
 
-            document.getElementById("area").textContent = `พื้นที่งาน: ${area.toFixed(2)} ตารางเมตร`;
-            document.getElementById("tileCount").textContent = `จำนวนกระเบื้อง: ${tileCount} กล่อง`;
-            document.getElementById("adhesiveNeeded").textContent = `จำนวนปูนกาว: ${adhesiveNeeded} กิโลกรัม`;
-            document.getElementById("groutNeeded").textContent = `จำนวนยาแนว: ${groutNeeded} กิโลกรัม`;
-        }
+    // Update tile size caption
+    if (tileSize >= 1.28) {
+        tileSizeLabel.textContent = "เลือกขนาดกระเบื้อง: แนะนำใช้ เวเบอร์ไทล์ 2-in-1";
+    } else {
+        tileSizeLabel.textContent = "เลือกขนาดกระเบื้อง:";
+    }
 
-        window.onload = () => {
-            updateTrowelSize();
-            updateGroutGapOptions();
-        };
-    </script>
+    // Determine trowel size and corresponding description
+    let trowelDescription;
+    if (tileSize <= 1.08) {
+        trowelDescription = "ขนาด 6x6 ใช้ปูกระเบื้องขนาดกลาง อัตราการใช้ปูนกาว 5 kg/m²";
+    } else {
+        trowelDescription = "ขนาด 10x10 ใช้ปูกระเบื้องขนาดใหญ่ อัตราการใช้ปูนกาว 7 kg/m²";
+    }
+
+    // Update the trowel size input box
+    trowelSizeInput.value = trowelDescription;
+
+    // Update the grout gaps dropdown based on the selected tile size
+    const groutRates = tileData[tileSize]?.groutRates || [];
+    groutRatesDropdown.innerHTML = ""; // Clear previous options
+
+    groutRates.forEach((rate, index) => {
+        const groutGapOption = document.createElement("option");
+        groutGapOption.value = rate; // Grout rate as value
+        groutGapOption.textContent = `${index + 1} มิลลิเมตร`;
+        groutRatesDropdown.appendChild(groutGapOption);
+    });
+
+    // Reset the result section
+    document.getElementById("result").querySelectorAll("p").forEach((p) => (p.textContent = "-"));
+}
+
+
+function displayGroutRate() {
+    const groutRate = parseFloat(document.getElementById("groutRates").value); // Get grout rate
+    document.getElementById("groutRateDisplay").textContent = `Grout Rate: ${groutRate.toFixed(2)} kg/m²`;
+}
+
+function calculateTileUsage() {
+    const width = parseFloat(document.getElementById("width").value);
+    const length = parseFloat(document.getElementById("length").value);
+    const tileSize = parseFloat(document.getElementById("tileSize").value);
+    const trowelDescription = document.getElementById("trowelSize").value;
+    const adhesiveRate = trowelDescription.includes("5 kg/m²") ? 5 : 7;
+    const groutRate = parseFloat(document.getElementById("groutRates").value);
+
+    if (isNaN(width) || isNaN(length) || isNaN(tileSize) || isNaN(groutRate)) {
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน ความกว้าง ความยาว ขนาดกระเบื้องและร่องกระเบื้อง");
+        return;
+    }
+
+    const area = width * length;
+    const tileCount = Math.ceil(area / tileSize);
+    const adhesiveNeeded = (area * adhesiveRate).toFixed(2);
+    const groutNeeded = (area * groutRate).toFixed(2);
+    const adhesiveNeededBag = Math.ceil(adhesiveNeeded / 20);
+    const groutNeededBag = Math.ceil(groutNeeded);
+
+    // Display results
+    document.getElementById("area").textContent = `พื้นที่งาน: ${area.toFixed(2)} ตารางเมตร`;
+    document.getElementById("tileCount").textContent = `จำนวนกระเบื้อง: ${tileCount} กล่อง`;
+    document.getElementById("adhesiveNeeded").textContent = `จำนวนปูนกาว: ${adhesiveNeededBag} ถุง (${adhesiveNeeded} กิโลกรัม)`;
+    document.getElementById("groutNeeded").textContent = `จำนวนยาแนว: ${groutNeededBag} ถุง (${groutNeeded} กิโลกรัม)`;
+}
+
+    document.getElementById("captureScreen").addEventListener("click", function () {
+        html2canvas(document.body).then(function (canvas) {
+            // Convert canvas to an image
+            const link = document.createElement("a");
+            link.download = "screenshot.png"; // Default file name
+            link.href = canvas.toDataURL("image/png"); // Image data URL
+            link.click(); // Trigger download
+        });
+    });
+
+window.onload = () => {
+    updateTrowelAndGroutGap();
+};
+</script>
 </body>
 </html>
